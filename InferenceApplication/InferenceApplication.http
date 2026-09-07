@@ -1,0 +1,6 @@
+@InferenceApplication_HostAddress = http://localhost:5047
+
+GET {{InferenceApplication_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

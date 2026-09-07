@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="inferenceapplication.ui/inferenceapplication.ui.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="InferenceApplication/InferenceApplication.csproj" />
+</Solution>

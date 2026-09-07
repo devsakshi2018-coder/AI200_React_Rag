@@ -1,0 +1,74 @@
+{
+  "info": {
+    "name": "Document Ingestion & Semantic Search API",
+    "_postman_id": "b1e3a7f0-0000-4000-8000-000000000000",
+    "description": "Collection with basic requests for upload, search and health endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "searchTopK", "value": "5" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/documents/health",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "documents", "health" ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Upload Document (multipart)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "" 
+            },
+            {
+              "key": "title",
+              "value": "Sample Document",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/documents/upload",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "documents", "upload" ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Semantic Search",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"Find information about product pricing\",\n  \"topK\": {{searchTopK}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/documents/search",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "documents", "search" ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
