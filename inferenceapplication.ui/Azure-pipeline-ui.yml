@@ -1,0 +1,42 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dockerRegistryServiceConnection: 'acr-service connection-ai200labs'
+  imageRepositoryUi: 'inference-application-ui'
+  containerRegistry: 'acrai200labs.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/InferenceApplication.ui/Dockerfile'
+  buildContext: '$(Build.SourcesDirectory)'
+  tag: '$(Build.BuildId)'
+  
+
+stages:
+
+# ---------- STAGE 1: Build & Push Image to ACR ----------
+- stage: BuildAndPush
+  displayName: 'Build and Push UI to ACR'
+  jobs:
+    - job: Docker
+      displayName: 'Docker Build & Push UI'
+      steps:
+        - task: Docker@2
+          displayName: 'Build and Push UI Image'
+          inputs:
+            containerRegistry: '$(dockerRegistryServiceConnection)'
+            repository: '$(imageRepositoryUi)'
+            command: 'buildAndPush'
+            Dockerfile: '$(dockerfilePath)'
+            buildContext: '$(buildContext)'
+            tags: |
+              $(tag)
+              latest
+
+
+
+
+

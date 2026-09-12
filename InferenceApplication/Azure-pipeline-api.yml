@@ -1,0 +1,67 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  dockerRegistryServiceConnection: 'acr-service connection-ai200labs'
+  imageRepository: 'inference-application'
+  containerRegistry: 'acrai200labs.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/InferenceApplication/Dockerfile'
+  buildContext: '$(Build.SourcesDirectory)'
+  tag: '$(Build.BuildId)'
+  containerAppName: 'containerapps-ai200-demo'
+  azureRmServiceConnection: 'Azure subscription 1(548de7e7-3aa7-4b4a-8187-4bc8cccceeb6)'
+  resourceGroup: 'rg-ai200-labs'
+
+stages:
+
+# ---------- STAGE 1: Build & Push Image to ACR ----------
+- stage: BuildAndPush
+  displayName: 'Build and Push to ACR'
+  jobs:
+    - job: Docker
+      displayName: 'Docker Build & Push'
+      steps:
+        - task: Docker@2
+          displayName: 'Build and Push API Image'
+          inputs:
+            containerRegistry: '$(dockerRegistryServiceConnection)'
+            repository: '$(imageRepository)'
+            command: 'buildAndPush'
+            Dockerfile: '$(dockerfilePath)'
+            buildContext: '$(buildContext)'
+            tags: |
+              $(tag)
+              latest
+
+
+# ---------- STAGE 2: Deploy to Container App ----------
+- stage: Deploy
+  displayName: 'Deploy to Container App'
+  dependsOn: BuildAndPush
+  condition: succeeded()
+  jobs:
+    - deployment: DeployContainerApp
+      displayName: 'Update Container App'
+      environment: 'staging'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureCLI@2
+                displayName: 'Update Container App with New Image'
+                inputs:
+                  azureSubscription: '$(azureRmServiceConnection)'
+                  scriptType: 'bash'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                    az containerapp update \
+                      --name $(containerAppName) \
+                      --resource-group $(resourceGroup) \
+                      --image $(containerRegistry)/$(imageRepository):$(tag)
+
+
