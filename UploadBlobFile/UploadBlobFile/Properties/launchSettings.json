@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "UploadBlobFile": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7013"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "containerRunArguments": "--init",
+      "httpPort": 32583,
+      "useSSL": false
+    }
+  }
+}
